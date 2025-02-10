@@ -1,5 +1,6 @@
 import requests
 import ipaddress
+import folium
 
 def get_public_ip():
     try:
@@ -21,11 +22,27 @@ def get_geolocation(ip, api_token):
         print(f"Error fetching geolocation data: {e}")
         return None
 
+def generate_map(latitude, longitude, ip):
+    """Generate a map using folium and save it as an HTML file."""
+    m = folium.Map(location=[latitude, longitude], zoom_start=10)
+
+    # Add a marker for the IP location
+    folium.Marker(
+        location=[latitude, longitude],
+        popup=f"IP: {ip}",
+        tooltip="Click for details"
+    ).add_to(m)
+
+    map_file = "ip_geolocation_map.html"
+    m.save(map_file)
+    print(f"\nMap saved to {map_file}. Open this file in your browser to view the map.")
+
 def main():
     # Get your free API token from https://ipinfo.io/signup
-    API_TOKEN = 'YOUR_API_TOKEN'    
+    API_TOKEN = 'YOUR_API_TOKEN'  
+
     ip = input("Enter an IP address (press Enter to use your public IP): ").strip()
-    
+
     if not ip:
         print("\nUsing public IP...")
         ip = get_public_ip()
@@ -44,7 +61,7 @@ def main():
 
     print(f"\nFetching geolocation data for {ip}...")
     data = get_geolocation(ip, API_TOKEN)
-    
+
     if data:
         print("\nGeolocation Information:")
         print(f"IP Address: {data.get('ip', 'N/A')}")
@@ -56,6 +73,14 @@ def main():
         print(f"Organization: {data.get('org', 'N/A')}")
         print(f"Postal Code: {data.get('postal', 'N/A')}")
         print(f"Timezone: {data.get('timezone', 'N/A')}")
+
+        if 'loc' in data:
+            latitude, longitude = map(float, data['loc'].split(','))
+            print(f"\nCoordinates: Latitude = {latitude}, Longitude = {longitude}")
+
+            generate_map(latitude, longitude, ip)
+        else:
+            print("No location data available to generate a map.")
     else:
         print("Failed to retrieve geolocation data.")
 
