@@ -1,3 +1,8 @@
+""" 
+[!] if you want to use this script, you have to go to https://ipinfo.io/signup and get your own API key  
+[!] put the API token in line 47, and then you are good to go! 
+"""
+
 import requests
 import ipaddress
 import folium
@@ -39,7 +44,7 @@ def generate_map(latitude, longitude, ip):
 
 def main():
     # Get your free API token from https://ipinfo.io/signup
-    API_TOKEN = 'YOUR_API_TOKEN'  
+    API_TOKEN = 'e5bc1b2a9e48db'  
 
     ip = input("Enter an IP address (press Enter to use your public IP): ").strip()
 
